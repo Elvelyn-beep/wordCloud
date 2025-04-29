@@ -8,29 +8,39 @@ from wordcloud import WordCloud, STOPWORDS
 
 def generate_wordcloud(text):
     '''
-    输入文本生成词云,如果是中文文本需要先进行分词处理
+    输入文本生成词云，如果是中文文本需要先进行分词处理
     '''
     # 设置显示方式
-    d=path.dirname(__file__)
-    alice_mask = np.array(Image.open(path.join(d, "Images//alice_mask.png")))
-    font_path=path.join(d,"font//msyh.ttf")
-    stopwords = set(STOPWORDS)
-    wc = WordCloud(background_color="white",# 设置背景颜色
-           max_words=2000, # 词云显示的最大词数  
-           mask=alice_mask,# 设置背景图片       
-           stopwords=stopwords, # 设置停用词
-           font_path=font_path, # 兼容中文字体，不然中文会显示乱码
-                  )
+    d = path.dirname(__file__)
+    alice_mask = np.array(Image.open(path.join(d, "Images/alice_mask.png")))
+    font_path = path.join(d, "font/msyh.ttf")
+
+    # 读取停用词文件 -
+    with open("1.txt", 'r', encoding='utf-8') as f:
+        stop_words = set(f.read().splitlines())
+    
+    # 合并英文停用词和自定义停用词
+    stopwords = set(STOPWORDS) | stop_words
+    
+    wc = WordCloud(
+        background_color="white",  # 设置背景颜色
+        max_words=300,            # 词云显示的最大词数
+        mask=alice_mask,          # 设置背景图片
+        stopwords=stopwords,      # 设置停用词
+        font_path=font_path,       # 兼容中文字体，不然中文会显示乱码
+        width=1000,               # 添加宽度设置
+        height=800,               # 添加高度设置
+        margin=2                  # 添加边距设置
+    )
 
     # 生成词云 
     wc.generate(text)
 
     # 生成的词云图像保存到本地
-    wc.to_file(path.join(d, "Images//alice.png"))
+    wc.to_file(path.join(d, "Images/alice.png"))
 
     # 显示图像
     plt.imshow(wc, interpolation='bilinear')
     # interpolation='bilinear' 表示插值方法为双线性插值
-    plt.axis("off")# 关掉图像的坐标
+    plt.axis("off")  # 关掉图像的坐标
     plt.show()
-
